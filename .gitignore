@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+generated/
+tsp-output/
+.DS_Store
+*.log
