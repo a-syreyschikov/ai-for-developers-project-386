@@ -1,4 +1,5 @@
 import "@typespec/http";
+import "@typespec/json-schema";
 import "@typespec/openapi";
 import "@typespec/openapi3";
 
@@ -106,6 +107,7 @@ model EventType {
   @doc("Event duration in minutes. Must be between 15 and 240 and divisible by 15.")
   @minValue(15)
   @maxValue(240)
+  @TypeSpec.JsonSchema.multipleOf(15)
   durationMinutes: int32;
 }
 
@@ -146,6 +148,7 @@ model Slot {
   @doc("Event duration in minutes.")
   @minValue(15)
   @maxValue(240)
+  @TypeSpec.JsonSchema.multipleOf(15)
   durationMinutes: int32;
 }
 
@@ -177,6 +180,7 @@ model Booking {
   @doc("Booked event duration in minutes.")
   @minValue(15)
   @maxValue(240)
+  @TypeSpec.JsonSchema.multipleOf(15)
   durationMinutes: int32;
 
   @doc("Inclusive booking start in UTC.")
@@ -223,6 +227,7 @@ model CreateEventTypeRequest {
 
   @minValue(15)
   @maxValue(240)
+  @TypeSpec.JsonSchema.multipleOf(15)
   durationMinutes: int32;
 }
 

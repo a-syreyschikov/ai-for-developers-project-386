@@ -122,6 +122,7 @@ test("schemas encode agreed validation constraints", () => {
   assert.equal(schemaProperties("EventType").description.maxLength, 1000);
   assert.equal(schemaProperties("EventType").durationMinutes.minimum, 15);
   assert.equal(schemaProperties("EventType").durationMinutes.maximum, 240);
+  assert.equal(schemaProperties("EventType").durationMinutes.multipleOf, 15);
 
   assert.equal(schemaProperties("Booking").guestEmail.format, "email");
   assert.equal(schemaProperties("Booking").guestEmail.maxLength, 254);

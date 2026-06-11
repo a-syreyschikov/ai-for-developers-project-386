@@ -11,6 +11,7 @@
   "devDependencies": {
     "@typespec/compiler": "^1.5.0",
     "@typespec/http": "^1.5.0",
+    "@typespec/json-schema": "^1.13.0",
     "@typespec/openapi": "^1.5.0",
     "@typespec/openapi3": "^1.5.0",
     "c8": "^10.1.3",

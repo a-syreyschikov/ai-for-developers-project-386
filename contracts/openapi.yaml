@@ -402,6 +402,7 @@ components:
           format: int32
           minimum: 15
           maximum: 240
+          multipleOf: 15
           description: Booked event duration in minutes.
         startsAt:
           allOf:
@@ -524,6 +525,7 @@ components:
           format: int32
           minimum: 15
           maximum: 240
+          multipleOf: 15
       description: Request to create an event type. The server generates id.
       x-example:
         title: Intro call
@@ -569,6 +571,7 @@ components:
           format: int32
           minimum: 15
           maximum: 240
+          multipleOf: 15
           description: Event duration in minutes. Must be between 15 and 240 and divisible by 15.
       description: Type of meeting that a guest can book.
       x-example:
@@ -671,6 +674,7 @@ components:
           format: int32
           minimum: 15
           maximum: 240
+          multipleOf: 15
           description: Event duration in minutes.
       description: Computed free slot for a concrete event type. Slots are not persisted and have no id.
       x-example:
