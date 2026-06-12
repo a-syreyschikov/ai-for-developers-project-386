@@ -2,8 +2,8 @@
   <section class="page-stack">
     <Message v-if="pageError" severity="error">{{ pageError }}</Message>
     <div v-if="loading" class="confirm-grid">
-      <Skeleton height="28rem" border-radius="28px" />
-      <Skeleton height="28rem" border-radius="28px" />
+      <Skeleton height="22rem" border-radius="22px" />
+      <Skeleton height="22rem" border-radius="22px" />
     </div>
 
     <div v-else-if="!owner || !eventType || !slot" class="unavailable-state surface-card">
@@ -150,7 +150,7 @@ onMounted(async () => {
 .confirm-grid {
   display: grid;
   grid-template-columns: 0.9fr 1fr;
-  gap: 18px;
+  gap: 16px;
   align-items: stretch;
 }
 
@@ -158,8 +158,8 @@ onMounted(async () => {
 .booking-form {
   display: grid;
   align-content: start;
-  gap: 18px;
-  padding: 28px;
+  gap: 16px;
+  padding: 24px;
 }
 
 .panel-label {
@@ -177,7 +177,7 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   line-height: 1;
 }
 

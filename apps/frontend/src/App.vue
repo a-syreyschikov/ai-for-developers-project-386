@@ -16,8 +16,8 @@ import AppHeader from '@/components/AppHeader.vue'
 
 <style scoped>
 .app-main {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1180px, calc(100% - 28px));
   margin: 0 auto;
-  padding: 32px 0 56px;
+  padding: 24px 0 44px;
 }
 </style>

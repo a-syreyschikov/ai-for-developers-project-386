@@ -8,7 +8,7 @@
     <Message v-if="error" severity="error">{{ error }}</Message>
 
     <div v-if="loading" class="booking-list">
-      <Skeleton v-for="item in 3" :key="item" height="8rem" border-radius="24px" />
+      <Skeleton v-for="item in 3" :key="item" height="7rem" border-radius="22px" />
     </div>
 
     <div v-else-if="bookings.length === 0" class="empty-state surface-card">
@@ -103,15 +103,15 @@ onMounted(async () => {
 .booking-card {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr) auto;
-  gap: 18px;
+  gap: 16px;
   align-items: center;
-  padding: 18px;
+  padding: 16px;
 }
 
 .date-block {
   display: grid;
-  border-radius: 20px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 14px;
   background: var(--brand-soft);
 }
 
@@ -135,7 +135,7 @@ onMounted(async () => {
   display: grid;
   place-items: center;
   gap: 8px;
-  padding: 48px 20px;
+  padding: 36px 18px;
   text-align: center;
 }
 

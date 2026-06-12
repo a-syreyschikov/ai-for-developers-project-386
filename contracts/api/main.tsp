@@ -140,10 +140,12 @@ model ScheduleDay {
   enabled: boolean;
 
   @doc("Inclusive local start time. Required when enabled is true; null when enabled is false.")
-  startsAtLocalTime: LocalTime | null;
+  @pattern("^([01][0-9]|2[0-3]):(00|15|30|45)$")
+  startsAtLocalTime: string | null;
 
   @doc("Exclusive local end time. Required when enabled is true; null when enabled is false.")
-  endsAtLocalTime: LocalTime | null;
+  @pattern("^([01][0-9]|2[0-3]):(00|15|30|45)$")
+  endsAtLocalTime: string | null;
 }
 
 @doc("Owner weekly availability template in the owner's time zone.")

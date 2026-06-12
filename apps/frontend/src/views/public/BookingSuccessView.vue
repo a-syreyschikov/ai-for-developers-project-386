@@ -39,8 +39,8 @@ const { createdBooking: booking, owner } = storeToRefs(bookingStore)
   justify-items: center;
   gap: 18px;
   max-width: 760px;
-  margin: 40px auto;
-  padding: 40px;
+  margin: 24px auto;
+  padding: 32px;
   text-align: center;
 }
 
@@ -51,7 +51,7 @@ const { createdBooking: booking, owner } = storeToRefs(bookingStore)
 
 h1 {
   color: var(--text-strong);
-  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 900;
   letter-spacing: -0.05em;
   line-height: 1;

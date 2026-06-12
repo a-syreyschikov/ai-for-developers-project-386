@@ -28,20 +28,20 @@ const { t } = useI18n()
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  width: min(1180px, calc(100% - 32px));
-  margin: 16px auto 0;
-  padding: 12px 16px;
+  width: min(1180px, calc(100% - 28px));
+  margin: 12px auto 0;
+  padding: 10px 14px;
   border: 1px solid var(--surface-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
   backdrop-filter: blur(18px);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   color: var(--text-strong);
   font-size: 1.05rem;
   font-weight: 800;
@@ -49,8 +49,8 @@ const { t } = useI18n()
 
 .brand-mark {
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   border-radius: 50%;
   color: #ffffff;
@@ -67,7 +67,7 @@ const { t } = useI18n()
   border-radius: 999px;
   color: var(--text-muted);
   font-weight: 700;
-  padding: 10px 14px;
+  padding: 8px 12px;
 }
 
 .main-nav a.router-link-active {
@@ -78,7 +78,7 @@ const { t } = useI18n()
 @media (max-width: 560px) {
   .app-header {
     align-items: flex-start;
-    border-radius: 28px;
+    border-radius: 22px;
     flex-direction: column;
   }
 

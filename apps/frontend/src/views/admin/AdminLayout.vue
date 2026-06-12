@@ -19,17 +19,17 @@ import { RouterLink, RouterView } from 'vue-router'
 <style scoped>
 .admin-shell {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 18px;
   align-items: start;
 }
 
 .admin-sidebar {
   position: sticky;
-  top: 96px;
+  top: 86px;
   display: grid;
   gap: 8px;
-  padding: 18px;
+  padding: 14px;
 }
 
 .sidebar-title {
@@ -43,8 +43,8 @@ import { RouterLink, RouterView } from 'vue-router'
   display: flex;
   align-items: center;
   gap: 10px;
-  border-radius: 16px;
-  padding: 12px 14px;
+  border-radius: 14px;
+  padding: 10px 12px;
   color: var(--text-muted);
   font-weight: 800;
 }

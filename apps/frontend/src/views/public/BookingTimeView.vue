@@ -3,7 +3,7 @@
     <Message v-if="error" severity="error">{{ error }}</Message>
 
     <div v-if="loading" class="booking-grid">
-      <Skeleton v-for="item in 3" :key="item" height="28rem" border-radius="28px" />
+      <Skeleton v-for="item in 3" :key="item" height="22rem" border-radius="22px" />
     </div>
 
     <Message v-else-if="!owner || !eventType" severity="warn">Тип события недоступен.</Message>
@@ -143,15 +143,20 @@ const slotCount = (date: { year: number; month: number; day: number }): number =
   return slotsByDate.value.get(slotDateKey(date))?.length ?? 0
 }
 
+const selectFirstSlotForDate = (dateKey: DateKey) => {
+  selectedSlot.value = slotsByDate.value.get(dateKey)?.[0] ?? null
+}
+
 const chooseInitialDate = () => {
   const firstAvailable = bookingWindowKeys.value.find((dateKey) => slotsByDate.value.has(dateKey))
   selectedDateKey.value = firstAvailable ?? ''
   dateModel.value = firstAvailable ? dateKeyToPickerDate(firstAvailable) : null
+  selectFirstSlotForDate(selectedDateKey.value)
 }
 
 watch(dateModel, (date) => {
   selectedDateKey.value = date ? pickerDateToDateKey(date) : ''
-  selectedSlot.value = null
+  selectFirstSlotForDate(selectedDateKey.value)
 })
 
 const goToConfirm = () => {
@@ -186,7 +191,7 @@ onMounted(async () => {
 .booking-grid {
   display: grid;
   grid-template-columns: 0.9fr 1fr 1fr;
-  gap: 18px;
+  gap: 16px;
   align-items: stretch;
 }
 
@@ -195,8 +200,8 @@ onMounted(async () => {
 .slots-panel {
   display: flex;
   flex-direction: column;
-  min-height: 560px;
-  padding: 24px;
+  min-height: 470px;
+  padding: 20px;
 }
 
 .panel-label {
@@ -234,8 +239,8 @@ strong {
 
 .slots-list {
   display: grid;
-  gap: 10px;
-  max-height: 388px;
+  gap: 8px;
+  max-height: 320px;
   overflow: auto;
   padding: 4px;
 }
@@ -247,8 +252,8 @@ strong {
   gap: 12px;
   width: 100%;
   border: 1px solid var(--surface-border);
-  border-radius: 18px;
-  padding: 14px 16px;
+  border-radius: 14px;
+  padding: 12px 14px;
   color: var(--text-strong);
   background: #ffffff;
   cursor: pointer;

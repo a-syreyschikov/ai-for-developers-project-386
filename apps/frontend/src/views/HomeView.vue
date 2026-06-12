@@ -40,20 +40,20 @@ import Button from 'primevue/button'
 .home-page {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 32px;
-  align-items: center;
-  min-height: calc(100vh - 180px);
+  gap: 28px;
+  align-items: start;
+  padding: 22px 0 36px;
 }
 
 .hero-copy {
   display: grid;
-  gap: 22px;
+  gap: 18px;
 }
 
 .eyebrow {
   width: fit-content;
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 7px 12px;
   color: var(--brand);
   background: var(--brand-soft);
   font-weight: 800;
@@ -61,15 +61,15 @@ import Button from 'primevue/button'
 
 h1 {
   color: var(--text-strong);
-  font-size: clamp(2.8rem, 7vw, 5.8rem);
+  font-size: clamp(2.2rem, 4.6vw, 4rem);
   font-weight: 900;
-  letter-spacing: -0.07em;
-  line-height: 0.94;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
 }
 
 p {
   color: var(--text-muted);
-  font-size: 1.08rem;
+  font-size: 1rem;
   max-width: 620px;
 }
 
@@ -81,16 +81,16 @@ p {
 
 .hero-panel {
   display: grid;
-  gap: 14px;
-  padding: 18px;
+  gap: 12px;
+  padding: 16px;
 }
 
 .metric-card {
   display: grid;
   gap: 8px;
-  min-height: 150px;
-  border-radius: 22px;
-  padding: 22px;
+  min-height: 124px;
+  border-radius: 18px;
+  padding: 18px;
   background: #f8fafc;
 }
 
@@ -111,7 +111,7 @@ p {
 
 .metric-card strong {
   color: inherit;
-  font-size: 1.35rem;
+  font-size: 1.18rem;
   font-weight: 900;
 }
 

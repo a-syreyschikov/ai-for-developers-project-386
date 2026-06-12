@@ -10,7 +10,7 @@
     <Message v-if="formError" severity="error">{{ formError }}</Message>
 
     <div v-if="loading" class="schedule-card surface-card">
-      <Skeleton v-for="item in 7" :key="item" height="4.5rem" border-radius="18px" />
+      <Skeleton v-for="item in 7" :key="item" height="4rem" border-radius="16px" />
     </div>
 
     <form v-else class="schedule-card surface-card" @submit.prevent="saveSchedule">
@@ -163,18 +163,18 @@ onMounted(async () => {
 <style scoped>
 .schedule-card {
   display: grid;
-  gap: 12px;
-  padding: 20px;
+  gap: 10px;
+  padding: 18px;
 }
 
 .schedule-row {
   display: grid;
-  grid-template-columns: minmax(190px, 1fr) 160px 160px;
-  gap: 12px;
+  grid-template-columns: minmax(180px, 1fr) 160px 160px;
+  gap: 10px;
   align-items: center;
   border: 1px solid var(--surface-border);
-  border-radius: 20px;
-  padding: 14px;
+  border-radius: 16px;
+  padding: 12px 14px;
   background: #ffffff;
 }
 

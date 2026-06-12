@@ -11,7 +11,7 @@ a {
 
 .page-stack {
   display: grid;
-  gap: 24px;
+  gap: 18px;
 }
 
 .page-heading {
@@ -21,10 +21,10 @@ a {
 
 .page-heading h1 {
   color: var(--text-strong);
-  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-size: clamp(1.9rem, 4vw, 3rem);
   font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
 }
 
 .page-heading p {
@@ -35,9 +35,9 @@ a {
 
 .surface-card {
   border: 1px solid var(--surface-border);
-  border-radius: 28px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.07);
 }
 
 .form-field {

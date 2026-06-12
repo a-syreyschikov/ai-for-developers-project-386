@@ -643,15 +643,13 @@ components:
           description: Whether the owner is available on this weekday.
         startsAtLocalTime:
           type: string
-          allOf:
-            - $ref: '#/components/schemas/LocalTime'
           nullable: true
+          pattern: ^([01][0-9]|2[0-3]):(00|15|30|45)$
           description: Inclusive local start time. Required when enabled is true; null when enabled is false.
         endsAtLocalTime:
           type: string
-          allOf:
-            - $ref: '#/components/schemas/LocalTime'
           nullable: true
+          pattern: ^([01][0-9]|2[0-3]):(00|15|30|45)$
           description: Exclusive local end time. Required when enabled is true; null when enabled is false.
       description: Owner availability for one weekday in the owner's time zone.
       x-example:
