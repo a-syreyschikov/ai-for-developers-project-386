@@ -1,0 +1,60 @@
+@import './base.css';
+
+#app {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page-stack {
+  display: grid;
+  gap: 24px;
+}
+
+.page-heading {
+  display: grid;
+  gap: 8px;
+}
+
+.page-heading h1 {
+  color: var(--text-strong);
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.page-heading p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 720px;
+}
+
+.surface-card {
+  border: 1px solid var(--surface-border);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.form-field label {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.field-error {
+  color: #b42318;
+  font-size: 0.875rem;
+}
+
+.muted {
+  color: var(--text-muted);
+}

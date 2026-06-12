@@ -1,0 +1,53 @@
+:root {
+  --surface-page: #f6f3ec;
+  --surface-panel: #ffffff;
+  --surface-border: rgba(15, 23, 42, 0.1);
+  --text-strong: #111827;
+  --text-body: #263244;
+  --text-muted: #667085;
+  --brand: #2563eb;
+  --brand-soft: #dbeafe;
+  --accent: #f97316;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text-body);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 34rem),
+    radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.12), transparent 32rem),
+    var(--surface-page);
+  line-height: 1.6;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
