@@ -6,16 +6,17 @@
     </RouterLink>
 
     <nav class="main-nav" aria-label="Главная навигация">
-      <RouterLink to="/book">{{ t('app.nav.book') }}</RouterLink>
-      <RouterLink to="/admin">{{ t('app.nav.admin') }}</RouterLink>
+      <RouterLink to="/book" :class="{ 'section-active': route.path === '/book' || route.path.startsWith('/book/') }">{{ t('app.nav.book') }}</RouterLink>
+      <RouterLink to="/admin" :class="{ 'section-active': route.path === '/admin' || route.path.startsWith('/admin/') }">{{ t('app.nav.admin') }}</RouterLink>
     </nav>
   </header>
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+const route = useRoute()
 const { t } = useI18n()
 </script>
 
@@ -69,7 +70,8 @@ const { t } = useI18n()
   padding: 8px 12px;
 }
 
-.main-nav a.router-link-active {
+.main-nav a.router-link-active,
+.main-nav a.section-active {
   color: var(--brand);
   background: var(--brand-soft);
 }
