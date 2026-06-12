@@ -6,3 +6,4 @@ tsp-output/
 *.log
 **/bin/
 **/obj/
+**/TestResults/

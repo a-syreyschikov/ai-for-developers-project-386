@@ -48,5 +48,6 @@ make docker-run
 - Любое изменение API сначала вносится в `contracts/api/main.tsp`.
 - После изменения контракта нужно выполнить `make test` и закоммитить обновленный `contracts/openapi.yaml`.
 - Backend реализуется от контракта и запускается через Docker, без локальной установки `dotnet`.
-- На текущем шаге coverage 80% относится к contract-test tooling.
-- Тесты будущих frontend/backend частей будут добавляться вместе с реализацией соответствующего поведения.
+- `make test` проверяет contract-test tooling с coverage threshold 80% statements.
+- `make backend-test` запускает backend integration tests через Docker с coverage threshold 80% lines.
+- Тесты будущих frontend/backend частей добавляются вместе с реализацией соответствующего поведения.

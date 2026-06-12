@@ -25,8 +25,8 @@ backend-build: ## Build backend Docker image
 backend-run: ## Run backend API on localhost:8080
 > docker run --rm -p 8080:8080 $(BACKEND_IMAGE_NAME)
 
-backend-test: ## Run backend tests in .NET SDK Docker container
-> docker run --rm -v $(CURDIR)/apps/backend:/src -w /src $(DOTNET_SDK_IMAGE) dotnet test Calendar.Backend.Tests/Calendar.Backend.Tests.csproj
+backend-test: ## Run backend tests with coverage in .NET SDK Docker container
+> docker run --rm -v $(CURDIR)/apps/backend:/src -w /src $(DOTNET_SDK_IMAGE) dotnet test Calendar.Backend.Tests/Calendar.Backend.Tests.csproj /p:CollectCoverage=true /p:Threshold=80 /p:ThresholdType=line /p:CoverletOutputFormat=json /p:CoverletOutput=TestResults/coverage
 
 docker-build: ## Build Docker image and validate contract during build
 > docker build -t $(IMAGE_NAME) .
