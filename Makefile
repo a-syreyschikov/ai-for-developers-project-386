@@ -5,7 +5,7 @@ IMAGE_NAME ?= calendar-contract
 BACKEND_IMAGE_NAME ?= calendar-backend
 DOTNET_SDK_IMAGE ?= mcr.microsoft.com/dotnet/sdk:8.0
 
-.PHONY: install contract test test-coverage backend-build backend-run backend-test docker-build docker-run clean help
+.PHONY: install contract test test-coverage backend-build backend-run backend-test compose-build compose-up compose-down docker-build docker-run clean help
 
 install: ## Install npm dependencies from lockfile
 > npm ci
@@ -27,6 +27,15 @@ backend-run: ## Run backend API on localhost:8080
 
 backend-test: ## Run backend tests with coverage in .NET SDK Docker container
 > docker run --rm -v $(CURDIR)/apps/backend:/src -w /src $(DOTNET_SDK_IMAGE) dotnet test Calendar.Backend.Tests/Calendar.Backend.Tests.csproj /p:CollectCoverage=true /p:Threshold=80 /p:ThresholdType=line /p:CoverletOutputFormat=json /p:CoverletOutput=TestResults/coverage
+
+compose-build: ## Build frontend and backend compose services
+> docker compose build
+
+compose-up: ## Run frontend and backend with Docker Compose
+> docker compose up --build
+
+compose-down: ## Stop frontend and backend compose services
+> docker compose down
 
 docker-build: ## Build Docker image and validate contract during build
 > docker build -t $(IMAGE_NAME) .

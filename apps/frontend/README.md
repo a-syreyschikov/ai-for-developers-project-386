@@ -49,6 +49,34 @@ Default proxy target is `http://localhost:8080`. Override it when needed:
 VITE_API_PROXY_TARGET=http://localhost:4010 npm run dev
 ```
 
+Run the real backend from the repository root:
+
+```bash
+make backend-build
+make backend-run
+```
+
+Then run the frontend from `apps/frontend`:
+
+```bash
+npm ci
+npm run dev
+```
+
+Open `http://localhost:5173`. Guest and owner flows will use the real backend through `/api`.
+
+The whole application can also be started from the repository root:
+
+```bash
+make compose-up
+```
+
+If the default frontend port is already in use, override it:
+
+```bash
+FRONTEND_PORT=5174 make compose-up
+```
+
 ## Prism Mock API
 
 Prism can serve a stateless mock API from the OpenAPI contract:

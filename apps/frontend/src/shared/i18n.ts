@@ -33,6 +33,7 @@ export const messages = {
       SLOT_UNAVAILABLE: 'Это время уже занято. Выберите другое время.',
       SLOT_OUTSIDE_BOOKING_WINDOW: 'Выбранное время находится вне окна записи.',
       BOOKING_NOT_CANCELLABLE: 'Эту встречу уже нельзя отменить.',
+      INTERNAL_ERROR: 'На сервере произошла ошибка. Попробуйте позже.',
     },
   },
 } as const

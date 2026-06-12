@@ -12,7 +12,7 @@
 - API-контракт: TypeSpec + OpenAPI 3.0.
 - Contract tests: `node:test` + `c8`.
 - Backend: .NET 8 + ASP.NET Core Minimal API + C#, запуск и тесты через Docker.
-- Будущий frontend: Vite + Vue + TypeScript.
+- Frontend: Vite + Vue + TypeScript.
 - Контейнеризация текущего шага: Docker-образ `calendar-contract`, который валидирует контракт.
 
 ## Структура
@@ -36,11 +36,41 @@ make test-coverage
 make backend-build
 make backend-run
 make backend-test
+make compose-build
+make compose-up
+make compose-down
 make docker-build
 make docker-run
 ```
 
 `make` по умолчанию запускает `make test`.
+
+## Запуск приложения
+
+Локальный dev-сценарий: backend запускается через Docker, frontend запускается через Vite и проксирует `/api` на `http://localhost:8080`.
+
+```bash
+make backend-build
+make backend-run
+```
+
+В другом терминале:
+
+```bash
+cd apps/frontend
+npm ci
+npm run dev
+```
+
+Compose-сценарий запускает backend и frontend одной командой:
+
+```bash
+make compose-up
+```
+
+Frontend будет доступен на `http://localhost:5173`, backend - на `http://localhost:8080`. Если порты заняты, их можно переопределить: `FRONTEND_PORT=5174 BACKEND_PORT=8081 make compose-up`.
+
+Данные backend хранятся в памяти и сбрасываются при перезапуске сервиса.
 
 ## Правила разработки
 
@@ -48,6 +78,7 @@ make docker-run
 - Любое изменение API сначала вносится в `contracts/api/main.tsp`.
 - После изменения контракта нужно выполнить `make test` и закоммитить обновленный `contracts/openapi.yaml`.
 - Backend реализуется от контракта и запускается через Docker, без локальной установки `dotnet`.
+- Frontend вызывает `/api`; в dev и compose запросы проксируются на backend.
 - `make test` проверяет contract-test tooling с coverage threshold 80% statements.
 - `make backend-test` запускает backend integration tests через Docker с coverage threshold 80% lines.
-- Тесты будущих frontend/backend частей добавляются вместе с реализацией соответствующего поведения.
+- Тесты frontend/backend частей добавляются вместе с реализацией соответствующего поведения.
