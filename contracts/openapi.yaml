@@ -21,75 +21,6 @@ paths:
                 $ref: '#/components/schemas/Owner'
       tags:
         - Owner
-  /api/owner/availability-windows:
-    get:
-      operationId: listOwnerAvailabilityWindows
-      summary: List availability windows
-      description: Returns availability windows sorted by startsAt ascending.
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AvailabilityWindowList'
-      tags:
-        - Owner
-    post:
-      operationId: createOwnerAvailabilityWindow
-      summary: Create availability window
-      description: Creates a future UTC availability window. Overlap with another window returns 409; overlap with bookings is allowed.
-      parameters: []
-      responses:
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AvailabilityWindow'
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-        '409':
-          description: The request conflicts with the current state of the server.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-      tags:
-        - Owner
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateAvailabilityWindowRequest'
-  /api/owner/availability-windows/{availabilityWindowId}:
-    delete:
-      operationId: deleteOwnerAvailabilityWindow
-      summary: Delete availability window
-      description: Deletes an availability window. Existing bookings remain unchanged.
-      parameters:
-        - name: availabilityWindowId
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/ResourceId'
-      responses:
-        '204':
-          description: 'There is no content to send for this request, but the headers may be useful. '
-        '404':
-          description: The server cannot find the requested resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-      tags:
-        - Owner
   /api/owner/bookings/upcoming:
     get:
       operationId: listOwnerUpcomingBookings
@@ -184,6 +115,53 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateEventTypeRequest'
+  /api/owner/schedule:
+    get:
+      operationId: getOwnerSchedule
+      summary: Get owner schedule
+      description: Returns the owner's weekly availability schedule in the owner's time zone.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+      tags:
+        - Owner
+    put:
+      operationId: updateOwnerSchedule
+      summary: Update owner schedule
+      description: Replaces the owner's weekly availability schedule. Existing bookings remain unchanged.
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+      tags:
+        - Owner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScheduleRequest'
   /api/public/bookings:
     post:
       operationId: createPublicBooking
@@ -337,39 +315,6 @@ paths:
           timeZone: Europe/Moscow
 components:
   schemas:
-    AvailabilityWindow:
-      type: object
-      required:
-        - id
-        - startsAt
-        - endsAt
-      properties:
-        id:
-          allOf:
-            - $ref: '#/components/schemas/ResourceId'
-          description: Server-generated availability window UUID.
-        startsAt:
-          allOf:
-            - $ref: '#/components/schemas/UtcMinuteDateTime'
-          description: Inclusive start of the half-open interval. Must be in the future and aligned to the 15-minute grid.
-        endsAt:
-          allOf:
-            - $ref: '#/components/schemas/UtcMinuteDateTime'
-          description: Exclusive end of the half-open interval. Must be after startsAt and aligned to the 15-minute grid.
-      description: Concrete UTC interval published by the owner as available time.
-      x-example:
-        id: 33333333-3333-3333-3333-333333333333
-        startsAt: '2026-06-15T07:00:00Z'
-        endsAt: '2026-06-15T10:00:00Z'
-    AvailabilityWindowList:
-      type: object
-      required:
-        - items
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/AvailabilityWindow'
     Booking:
       type: object
       required:
@@ -462,20 +407,6 @@ components:
         - scheduled
         - cancelled
       description: Booking lifecycle status. Cancelled bookings do not block slots.
-    CreateAvailabilityWindowRequest:
-      type: object
-      required:
-        - startsAt
-        - endsAt
-      properties:
-        startsAt:
-          $ref: '#/components/schemas/UtcMinuteDateTime'
-        endsAt:
-          $ref: '#/components/schemas/UtcMinuteDateTime'
-      description: Request to create an availability window. The server generates id.
-      x-example:
-        startsAt: '2026-06-15T07:00:00Z'
-        endsAt: '2026-06-15T10:00:00Z'
     CreateBookingRequest:
       type: object
       required:
@@ -537,9 +468,8 @@ components:
         - VALIDATION_FAILED
         - EVENT_TYPE_NOT_FOUND
         - BOOKING_NOT_FOUND
-        - AVAILABILITY_WINDOW_NOT_FOUND
         - DUPLICATE_EVENT_TYPE_TITLE
-        - AVAILABILITY_WINDOW_OVERLAP
+        - INVALID_SCHEDULE
         - SLOT_UNAVAILABLE
         - SLOT_OUTSIDE_BOOKING_WINDOW
         - BOOKING_NOT_CANCELLABLE
@@ -588,6 +518,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EventType'
+    LocalTime:
+      type: string
+      pattern: ^([01][0-9]|2[0-3]):(00|15|30|45)$
+      description: Local owner time in HH:mm format. Minutes must be 00, 15, 30, or 45.
     Owner:
       type: object
       required:
@@ -649,6 +583,82 @@ components:
       type: string
       format: uuid
       description: Server-generated UUID string.
+    Schedule:
+      type: object
+      required:
+        - days
+      properties:
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleDay'
+          minItems: 7
+          maxItems: 7
+          description: Seven schedule days ordered from monday to sunday.
+      description: Owner weekly availability template in the owner's time zone.
+      x-example:
+        days:
+          - weekday: monday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: tuesday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: wednesday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: thursday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: friday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: saturday
+            enabled: false
+            startsAtLocalTime: null
+            endsAtLocalTime: null
+          - weekday: sunday
+            enabled: false
+            startsAtLocalTime: null
+            endsAtLocalTime: null
+    ScheduleDay:
+      type: object
+      required:
+        - weekday
+        - enabled
+        - startsAtLocalTime
+        - endsAtLocalTime
+      properties:
+        weekday:
+          allOf:
+            - $ref: '#/components/schemas/Weekday'
+          description: Weekday represented by this schedule day.
+        enabled:
+          type: boolean
+          description: Whether the owner is available on this weekday.
+        startsAtLocalTime:
+          type: string
+          allOf:
+            - $ref: '#/components/schemas/LocalTime'
+          nullable: true
+          description: Inclusive local start time. Required when enabled is true; null when enabled is false.
+        endsAtLocalTime:
+          type: string
+          allOf:
+            - $ref: '#/components/schemas/LocalTime'
+          nullable: true
+          description: Exclusive local end time. Required when enabled is true; null when enabled is false.
+      description: Owner availability for one weekday in the owner's time zone.
+      x-example:
+        weekday: monday
+        enabled: true
+        startsAtLocalTime: '09:00'
+        endsAtLocalTime: '18:00'
     Slot:
       type: object
       required:
@@ -691,10 +701,63 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Slot'
+    UpdateScheduleRequest:
+      type: object
+      required:
+        - days
+      properties:
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleDay'
+          minItems: 7
+          maxItems: 7
+      description: Request to replace the owner's weekly schedule.
+      x-example:
+        days:
+          - weekday: monday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: tuesday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: wednesday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: thursday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: friday
+            enabled: true
+            startsAtLocalTime: '09:00'
+            endsAtLocalTime: '18:00'
+          - weekday: saturday
+            enabled: false
+            startsAtLocalTime: null
+            endsAtLocalTime: null
+          - weekday: sunday
+            enabled: false
+            startsAtLocalTime: null
+            endsAtLocalTime: null
     UtcMinuteDateTime:
       type: string
       format: date-time
       description: A UTC timestamp with Z suffix. The API accepts minute precision only; seconds and milliseconds must be zero.
+    Weekday:
+      type: string
+      enum:
+        - monday
+        - tuesday
+        - wednesday
+        - thursday
+        - friday
+        - saturday
+        - sunday
+      description: Weekday names used by the owner's weekly schedule.
 servers:
   - url: http://localhost:8080
     description: Local development server

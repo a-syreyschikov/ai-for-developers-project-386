@@ -13,8 +13,7 @@ const requiredPaths = {
   "/api/public/bookings": ["post"],
   "/api/owner": ["get"],
   "/api/owner/event-types": ["get", "post"],
-  "/api/owner/availability-windows": ["get", "post"],
-  "/api/owner/availability-windows/{availabilityWindowId}": ["delete"],
+  "/api/owner/schedule": ["get", "put"],
   "/api/owner/bookings/upcoming": ["get"],
   "/api/owner/bookings/{bookingId}/cancel": ["post"],
 };
@@ -28,9 +27,8 @@ const operationIds = [
   "getOwner",
   "listOwnerEventTypes",
   "createOwnerEventType",
-  "listOwnerAvailabilityWindows",
-  "createOwnerAvailabilityWindow",
-  "deleteOwnerAvailabilityWindow",
+  "getOwnerSchedule",
+  "updateOwnerSchedule",
   "listOwnerUpcomingBookings",
   "cancelOwnerBooking",
 ];
@@ -90,13 +88,14 @@ test("operations have stable operationIds and tags", () => {
 });
 
 test("domain schemas contain required fields", () => {
-  for (const name of ["Owner", "EventType", "AvailabilityWindow", "Slot", "Booking", "ProblemDetails"]) {
+  for (const name of ["Owner", "EventType", "Schedule", "ScheduleDay", "Slot", "Booking", "ProblemDetails"]) {
     assert.ok(schema(name), `missing schema ${name}`);
   }
 
   assert.deepEqual(schema("Owner").required.toSorted(), ["displayName", "id", "timeZone"].toSorted());
   assert.deepEqual(schema("EventType").required.toSorted(), ["description", "durationMinutes", "id", "title"].toSorted());
-  assert.deepEqual(schema("AvailabilityWindow").required.toSorted(), ["endsAt", "id", "startsAt"].toSorted());
+  assert.deepEqual(schema("Schedule").required, ["days"]);
+  assert.deepEqual(schema("ScheduleDay").required.toSorted(), ["enabled", "endsAtLocalTime", "startsAtLocalTime", "weekday"].toSorted());
   assert.deepEqual(schema("Slot").required.toSorted(), ["durationMinutes", "endsAt", "eventTypeId", "startsAt"].toSorted());
   assert.deepEqual(schema("Booking").required.toSorted(), [
     "createdAt",
@@ -124,13 +123,20 @@ test("schemas encode agreed validation constraints", () => {
   assert.equal(schemaProperties("EventType").durationMinutes.maximum, 240);
   assert.equal(schemaProperties("EventType").durationMinutes.multipleOf, 15);
 
+  assert.deepEqual(schema("Weekday").enum, ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]);
+  assert.equal(schema("LocalTime").pattern, "^([01][0-9]|2[0-3]):(00|15|30|45)$");
+  assert.equal(schemaProperties("Schedule").days.minItems, 7);
+  assert.equal(schemaProperties("Schedule").days.maxItems, 7);
+  assert.equal(schemaProperties("ScheduleDay").startsAtLocalTime.nullable, true);
+  assert.equal(schemaProperties("ScheduleDay").endsAtLocalTime.nullable, true);
+
   assert.equal(schemaProperties("Booking").guestEmail.format, "email");
   assert.equal(schemaProperties("Booking").guestEmail.maxLength, 254);
   assert.deepEqual(schema("BookingStatus").enum.toSorted(), ["cancelled", "scheduled"]);
 });
 
 test("list responses use the items wrapper", () => {
-  for (const name of ["EventTypeList", "AvailabilityWindowList", "SlotList", "BookingList"]) {
+  for (const name of ["EventTypeList", "SlotList", "BookingList"]) {
     assert.deepEqual(schema(name).required, ["items"]);
     assert.equal(schemaProperties(name).items.type, "array");
   }
@@ -138,12 +144,11 @@ test("list responses use the items wrapper", () => {
 
 test("error responses and error codes cover MVP scenarios", () => {
   assert.deepEqual(schema("ErrorCode").enum.toSorted(), [
-    "AVAILABILITY_WINDOW_NOT_FOUND",
-    "AVAILABILITY_WINDOW_OVERLAP",
     "BOOKING_NOT_CANCELLABLE",
     "BOOKING_NOT_FOUND",
     "DUPLICATE_EVENT_TYPE_TITLE",
     "EVENT_TYPE_NOT_FOUND",
+    "INVALID_SCHEDULE",
     "SLOT_OUTSIDE_BOOKING_WINDOW",
     "SLOT_UNAVAILABLE",
     "VALIDATION_FAILED",
@@ -154,19 +159,19 @@ test("error responses and error codes cover MVP scenarios", () => {
   assert.ok(responseCodes("/api/public/bookings", "post").includes("409"));
   assert.ok(responseCodes("/api/public/bookings", "post").includes("422"));
   assert.ok(responseCodes("/api/owner/event-types", "post").includes("409"));
-  assert.ok(responseCodes("/api/owner/availability-windows", "post").includes("409"));
+  assert.ok(responseCodes("/api/owner/schedule", "put").includes("400"));
+  assert.ok(responseCodes("/api/owner/schedule", "put").includes("422"));
   assert.ok(responseCodes("/api/owner/bookings/{bookingId}/cancel", "post").includes("422"));
 });
 
-test("create and delete operations use agreed status codes", () => {
+test("mutating operations use agreed status codes", () => {
   assert.ok(responseCodes("/api/owner/event-types", "post").includes("201"));
-  assert.ok(responseCodes("/api/owner/availability-windows", "post").includes("201"));
   assert.ok(responseCodes("/api/public/bookings", "post").includes("201"));
-  assert.ok(responseCodes("/api/owner/availability-windows/{availabilityWindowId}", "delete").includes("204"));
+  assert.ok(responseCodes("/api/owner/schedule", "put").includes("200"));
 });
 
 test("schemas include smoke examples for implementation agents", () => {
-  for (const name of ["Owner", "EventType", "AvailabilityWindow", "Slot", "Booking", "CreateBookingRequest", "ProblemDetails"]) {
+  for (const name of ["Owner", "EventType", "Schedule", "ScheduleDay", "Slot", "Booking", "CreateBookingRequest", "UpdateScheduleRequest", "ProblemDetails"]) {
     assert.ok(hasSchemaExample(name), `missing schema example for ${name}`);
   }
 });

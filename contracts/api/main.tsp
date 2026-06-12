@@ -24,9 +24,8 @@ enum ErrorCode {
   VALIDATION_FAILED,
   EVENT_TYPE_NOT_FOUND,
   BOOKING_NOT_FOUND,
-  AVAILABILITY_WINDOW_NOT_FOUND,
   DUPLICATE_EVENT_TYPE_TITLE,
-  AVAILABILITY_WINDOW_OVERLAP,
+  INVALID_SCHEDULE,
   SLOT_UNAVAILABLE,
   SLOT_OUTSIDE_BOOKING_WINDOW,
   BOOKING_NOT_CANCELLABLE,
@@ -111,21 +110,59 @@ model EventType {
   durationMinutes: int32;
 }
 
-@doc("Concrete UTC interval published by the owner as available time.")
+@doc("Weekday names used by the owner's weekly schedule.")
+enum Weekday {
+  monday,
+  tuesday,
+  wednesday,
+  thursday,
+  friday,
+  saturday,
+  sunday,
+}
+
+@doc("Local owner time in HH:mm format. Minutes must be 00, 15, 30, or 45.")
+@pattern("^([01][0-9]|2[0-3]):(00|15|30|45)$")
+scalar LocalTime extends string;
+
+@doc("Owner availability for one weekday in the owner's time zone.")
 @extension("x-example", #{
-  id: "33333333-3333-3333-3333-333333333333",
-  startsAt: "2026-06-15T07:00:00Z",
-  endsAt: "2026-06-15T10:00:00Z"
+  weekday: "monday",
+  enabled: true,
+  startsAtLocalTime: "09:00",
+  endsAtLocalTime: "18:00"
 })
-model AvailabilityWindow {
-  @doc("Server-generated availability window UUID.")
-  id: ResourceId;
+model ScheduleDay {
+  @doc("Weekday represented by this schedule day.")
+  weekday: Weekday;
 
-  @doc("Inclusive start of the half-open interval. Must be in the future and aligned to the 15-minute grid.")
-  startsAt: UtcMinuteDateTime;
+  @doc("Whether the owner is available on this weekday.")
+  enabled: boolean;
 
-  @doc("Exclusive end of the half-open interval. Must be after startsAt and aligned to the 15-minute grid.")
-  endsAt: UtcMinuteDateTime;
+  @doc("Inclusive local start time. Required when enabled is true; null when enabled is false.")
+  startsAtLocalTime: LocalTime | null;
+
+  @doc("Exclusive local end time. Required when enabled is true; null when enabled is false.")
+  endsAtLocalTime: LocalTime | null;
+}
+
+@doc("Owner weekly availability template in the owner's time zone.")
+@extension("x-example", #{
+  days: #[
+    #{ weekday: "monday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "tuesday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "wednesday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "thursday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "friday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "saturday", enabled: false, startsAtLocalTime: null, endsAtLocalTime: null },
+    #{ weekday: "sunday", enabled: false, startsAtLocalTime: null, endsAtLocalTime: null }
+  ]
+})
+model Schedule {
+  @doc("Seven schedule days ordered from monday to sunday.")
+  @minItems(7)
+  @maxItems(7)
+  days: ScheduleDay[];
 }
 
 @doc("Computed free slot for a concrete event type. Slots are not persisted and have no id.")
@@ -231,14 +268,22 @@ model CreateEventTypeRequest {
   durationMinutes: int32;
 }
 
-@doc("Request to create an availability window. The server generates id.")
+@doc("Request to replace the owner's weekly schedule.")
 @extension("x-example", #{
-  startsAt: "2026-06-15T07:00:00Z",
-  endsAt: "2026-06-15T10:00:00Z"
+  days: #[
+    #{ weekday: "monday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "tuesday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "wednesday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "thursday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "friday", enabled: true, startsAtLocalTime: "09:00", endsAtLocalTime: "18:00" },
+    #{ weekday: "saturday", enabled: false, startsAtLocalTime: null, endsAtLocalTime: null },
+    #{ weekday: "sunday", enabled: false, startsAtLocalTime: null, endsAtLocalTime: null }
+  ]
 })
-model CreateAvailabilityWindowRequest {
-  startsAt: UtcMinuteDateTime;
-  endsAt: UtcMinuteDateTime;
+model UpdateScheduleRequest {
+  @minItems(7)
+  @maxItems(7)
+  days: ScheduleDay[];
 }
 
 @doc("Request to create a guest booking. The server computes endsAt from event type duration.")
@@ -268,10 +313,6 @@ model EventTypeList {
   items: EventType[];
 }
 
-model AvailabilityWindowList {
-  items: AvailabilityWindow[];
-}
-
 model SlotList {
   items: Slot[];
 }
@@ -285,18 +326,9 @@ model CreatedEventTypeResponse {
   @body body: EventType;
 }
 
-model CreatedAvailabilityWindowResponse {
-  @statusCode statusCode: 201;
-  @body body: AvailabilityWindow;
-}
-
 model CreatedBookingResponse {
   @statusCode statusCode: 201;
   @body body: Booking;
-}
-
-model NoContentResponse {
-  @statusCode statusCode: 204;
 }
 
 model BadRequestResponse {
@@ -384,26 +416,19 @@ interface OwnerApi {
   @route("/event-types")
   createOwnerEventType(@body request: CreateEventTypeRequest): CreatedEventTypeResponse | BadRequestResponse | ConflictResponse;
 
-  @summary("List availability windows")
-  @doc("Returns availability windows sorted by startsAt ascending.")
-  @operationId("listOwnerAvailabilityWindows")
+  @summary("Get owner schedule")
+  @doc("Returns the owner's weekly availability schedule in the owner's time zone.")
+  @operationId("getOwnerSchedule")
   @get
-  @route("/availability-windows")
-  listOwnerAvailabilityWindows(): AvailabilityWindowList;
+  @route("/schedule")
+  getOwnerSchedule(): Schedule;
 
-  @summary("Create availability window")
-  @doc("Creates a future UTC availability window. Overlap with another window returns 409; overlap with bookings is allowed.")
-  @operationId("createOwnerAvailabilityWindow")
-  @post
-  @route("/availability-windows")
-  createOwnerAvailabilityWindow(@body request: CreateAvailabilityWindowRequest): CreatedAvailabilityWindowResponse | BadRequestResponse | ConflictResponse;
-
-  @summary("Delete availability window")
-  @doc("Deletes an availability window. Existing bookings remain unchanged.")
-  @operationId("deleteOwnerAvailabilityWindow")
-  @delete
-  @route("/availability-windows/{availabilityWindowId}")
-  deleteOwnerAvailabilityWindow(@path availabilityWindowId: ResourceId): NoContentResponse | NotFoundResponse;
+  @summary("Update owner schedule")
+  @doc("Replaces the owner's weekly availability schedule. Existing bookings remain unchanged.")
+  @operationId("updateOwnerSchedule")
+  @put
+  @route("/schedule")
+  updateOwnerSchedule(@body request: UpdateScheduleRequest): Schedule | BadRequestResponse | UnprocessableEntityResponse;
 
   @summary("List upcoming owner bookings")
   @doc("Returns scheduled bookings with startsAt > server now, sorted by startsAt ascending.")

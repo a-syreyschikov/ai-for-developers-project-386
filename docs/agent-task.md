@@ -29,7 +29,7 @@ Backend должен реализовывать API из `contracts/openapi.yaml
 
 - полуоткрытые интервалы `[startsAt, endsAt)`;
 - запрет любых пересечений scheduled бронирований;
-- генерация слотов из окон доступности;
+- генерация слотов из недельного расписания владельца в `Owner.timeZone`;
 - строгая граница окна записи `now < startsAt < now + 14 days`;
 - идемпотентная отмена будущих бронирований владельцем.
 
@@ -44,4 +44,5 @@ Frontend должен строить типы API от `contracts/openapi.yaml` 
 - показывать время с учетом `Owner.timeZone`;
 - не создавать слот локально, если backend не вернул его в public slots API;
 - корректно обрабатывать `409 SLOT_UNAVAILABLE` и `422 SLOT_OUTSIDE_BOOKING_WINDOW`;
-- owner upcoming list показывает только будущие scheduled звонки.
+- owner upcoming list показывает только будущие scheduled звонки;
+- owner schedule редактируется как недельный шаблон с одним интервалом на день.
