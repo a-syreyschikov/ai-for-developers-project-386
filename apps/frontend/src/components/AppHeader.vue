@@ -32,10 +32,9 @@ const { t } = useI18n()
   margin: 12px auto 0;
   padding: 10px 14px;
   border: 1px solid var(--surface-border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
-  backdrop-filter: blur(18px);
+  border-radius: var(--radius-panel);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-panel);
 }
 
 .brand {
@@ -44,7 +43,7 @@ const { t } = useI18n()
   gap: 9px;
   color: var(--text-strong);
   font-size: 1.05rem;
-  font-weight: 800;
+  font-weight: 650;
 }
 
 .brand-mark {
@@ -52,9 +51,9 @@ const { t } = useI18n()
   width: 36px;
   height: 36px;
   place-items: center;
-  border-radius: 50%;
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--brand), #7c3aed);
+  border-radius: var(--radius-control);
+  color: var(--p-primary-inverse-color, #ffffff);
+  background: var(--brand);
 }
 
 .main-nav {
@@ -64,9 +63,9 @@ const { t } = useI18n()
 }
 
 .main-nav a {
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   color: var(--text-muted);
-  font-weight: 700;
+  font-weight: 600;
   padding: 8px 12px;
 }
 
@@ -78,7 +77,6 @@ const { t } = useI18n()
 @media (max-width: 560px) {
   .app-header {
     align-items: flex-start;
-    border-radius: 22px;
     flex-direction: column;
   }
 

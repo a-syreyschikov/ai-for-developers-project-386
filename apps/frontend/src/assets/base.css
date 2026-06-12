@@ -1,13 +1,18 @@
 :root {
-  --surface-page: #f6f3ec;
-  --surface-panel: #ffffff;
-  --surface-border: rgba(15, 23, 42, 0.1);
-  --text-strong: #111827;
-  --text-body: #263244;
-  --text-muted: #667085;
-  --brand: #2563eb;
-  --brand-soft: #dbeafe;
-  --accent: #f97316;
+  --surface-page: var(--p-surface-50, #f8fafc);
+  --surface-panel: var(--p-surface-0, #ffffff);
+  --surface-panel-muted: var(--p-surface-100, #f1f5f9);
+  --surface-border: var(--p-content-border-color, #e2e8f0);
+  --text-strong: var(--p-surface-950, #020617);
+  --text-body: var(--p-surface-700, #334155);
+  --text-muted: var(--p-surface-500, #64748b);
+  --brand: var(--p-primary-color, #4f46e5);
+  --brand-soft: var(--p-highlight-background, #eef2ff);
+  --danger: var(--p-red-700, #b42318);
+  --success: var(--p-primary-color, #1c1917);
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  --shadow-panel: 0 14px 34px rgba(15, 23, 42, 0.08);
 }
 
 *,
@@ -15,16 +20,14 @@
 *::after {
   box-sizing: border-box;
   margin: 0;
-  font-weight: normal;
 }
 
 body {
   min-height: 100vh;
   color: var(--text-body);
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 34rem),
-    radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.12), transparent 32rem),
-    var(--surface-page);
+    radial-gradient(circle at top left, rgba(79, 70, 229, 0.12), transparent 32rem),
+    linear-gradient(180deg, #ffffff 0%, var(--surface-page) 38rem);
   line-height: 1.6;
   font-family:
     Inter,

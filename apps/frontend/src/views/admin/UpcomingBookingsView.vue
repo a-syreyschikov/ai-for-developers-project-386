@@ -8,7 +8,7 @@
     <Message v-if="error" severity="error">{{ error }}</Message>
 
     <div v-if="loading" class="booking-list">
-      <Skeleton v-for="item in 3" :key="item" height="7rem" border-radius="22px" />
+      <Skeleton v-for="item in 3" :key="item" height="7rem" />
     </div>
 
     <div v-else-if="bookings.length === 0" class="empty-state surface-card">
@@ -26,7 +26,7 @@
         <div class="booking-info">
           <h2>{{ booking.eventTypeTitle }}</h2>
           <p v-if="owner">{{ owner.displayName }} и {{ booking.guestName }} · {{ booking.guestEmail }}</p>
-          <Tag :value="`${booking.durationMinutes} минут`" severity="info" />
+          <Tag class="booking-duration" :value="`${booking.durationMinutes} минут`" severity="secondary" />
         </div>
         <Button label="Отменить" severity="danger" outlined @click="confirmCancel(booking)" />
       </article>
@@ -110,15 +110,17 @@ onMounted(async () => {
 
 .date-block {
   display: grid;
-  border-radius: 16px;
+  gap: 4px;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-control);
   padding: 14px;
-  background: var(--brand-soft);
+  background: var(--surface-panel-muted);
 }
 
 .date-block strong,
 .booking-info h2 {
   color: var(--text-strong);
-  font-weight: 900;
+  font-weight: 650;
 }
 
 .date-block span,
@@ -129,6 +131,10 @@ onMounted(async () => {
 .booking-info {
   display: grid;
   gap: 6px;
+}
+
+.booking-duration {
+  justify-self: start;
 }
 
 .empty-state {
@@ -147,7 +153,7 @@ onMounted(async () => {
 .empty-state strong {
   color: var(--text-strong);
   font-size: 1.25rem;
-  font-weight: 900;
+  font-weight: 650;
 }
 
 @media (max-width: 760px) {

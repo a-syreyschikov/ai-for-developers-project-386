@@ -45,16 +45,16 @@ const { createdBooking: booking, owner } = storeToRefs(bookingStore)
 }
 
 .success-page > i {
-  color: #16a34a;
+  color: var(--brand);
   font-size: 3.5rem;
 }
 
 h1 {
   color: var(--text-strong);
   font-size: clamp(2rem, 4vw, 2.8rem);
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
 p {
@@ -82,7 +82,7 @@ dt {
 
 dd {
   color: var(--text-strong);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .actions {

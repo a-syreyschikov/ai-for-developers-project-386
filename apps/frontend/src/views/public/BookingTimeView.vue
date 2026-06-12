@@ -3,7 +3,7 @@
     <Message v-if="error" severity="error">{{ error }}</Message>
 
     <div v-else-if="loading" class="booking-grid">
-      <Skeleton v-for="item in 3" :key="item" height="22rem" border-radius="22px" />
+      <Skeleton v-for="item in 3" :key="item" height="22rem" />
     </div>
 
     <Message v-else-if="!owner || !eventType" severity="warn">Тип события недоступен.</Message>
@@ -20,21 +20,18 @@
           <span class="panel-label">Тип встречи</span>
           <h3>{{ eventType.title }}</h3>
           <p class="muted">{{ eventType.description || 'Описание не указано.' }}</p>
-          <Tag :value="`${eventType.durationMinutes} минут`" severity="info" />
+          <Tag :value="`${eventType.durationMinutes} минут`" severity="secondary" />
         </div>
         <Divider />
-        <div>
-          <span class="panel-label">Выбранная дата</span>
-          <strong>{{ selectedDateKey ? formatDateLong(dateKeyToPickerDate(selectedDateKey), owner.timeZone) : 'Дата не выбрана' }}</strong>
-        </div>
-        <div>
-          <span class="panel-label">Выбранное время</span>
-          <strong>{{ selectedSlot ? formatSlotRange(selectedSlot, owner.timeZone) : 'Время не выбрано' }}</strong>
+        <div class="selection-card">
+          <span class="panel-label">Выбранный слот</span>
+          <strong class="selection-time">{{ selectedSlot ? formatSlotRange(selectedSlot, owner.timeZone) : 'Время не выбрано' }}</strong>
+          <span class="selection-date">{{ selectedDateKey ? formatDateLong(dateKeyToPickerDate(selectedDateKey), owner.timeZone) : 'Дата не выбрана' }}</span>
         </div>
       </aside>
 
       <section class="calendar-panel surface-card">
-        <h2>Дата</h2>
+        <h2>Календарь</h2>
         <DatePicker
           v-model="dateModel"
           inline
@@ -42,11 +39,12 @@
           :min-date="minDate"
           :max-date="maxDate"
           :disabled-dates="disabledDates"
+          :pt="datePickerPt"
         >
           <template #date="slotProps">
             <div class="date-cell">
               <span>{{ slotProps.date.day }}</span>
-              <small v-if="slotCount(slotProps.date) > 0">{{ slotCount(slotProps.date) }}</small>
+              <small v-if="availableSlotCount(slotProps.date) > 0">{{ availableSlotCount(slotProps.date) }}</small>
             </div>
           </template>
         </DatePicker>
@@ -54,7 +52,7 @@
 
       <section class="slots-panel surface-card">
         <div class="slots-heading">
-          <h2>Свободные слоты</h2>
+          <h2>Свободное время</h2>
           <span class="muted">{{ selectedDateSlots.length }} доступно</span>
         </div>
 
@@ -74,7 +72,7 @@
             @click="selectedSlot = slot"
           >
             <span>{{ formatSlotRange(slot, owner.timeZone) }}</span>
-            <Tag :value="selectedSlot?.startsAt === slot.startsAt ? 'Выбрано' : 'Свободно'" :severity="selectedSlot?.startsAt === slot.startsAt ? 'success' : 'info'" />
+            <Tag :value="selectedSlot?.startsAt === slot.startsAt ? 'Выбрано' : 'Свободно'" :severity="selectedSlot?.startsAt === slot.startsAt ? undefined : 'secondary'" />
           </button>
         </div>
 
@@ -127,20 +125,37 @@ const error = ref('')
 
 const slotsByDate = computed(() => (owner.value ? groupSlotsByDate(slots.value, owner.value.timeZone) : new Map<DateKey, Slot[]>()))
 const bookingWindowKeys = computed(() => (owner.value ? buildBookingWindowDateKeys(todayDateKeyInTimeZone(owner.value.timeZone)) : []))
-const minDate = computed(() => (bookingWindowKeys.value[0] ? dateKeyToPickerDate(bookingWindowKeys.value[0]) : undefined))
+const calendarWindowKeys = computed(() => {
+  const availableKeys = Array.from(slotsByDate.value.keys()).sort()
+  const firstAvailable = availableKeys[0]
+  const lastAvailable = availableKeys[availableKeys.length - 1]
+  if (!firstAvailable || !lastAvailable) {
+    return bookingWindowKeys.value
+  }
+
+  const daysCount = Math.floor((dateKeyToPickerDate(lastAvailable).getTime() - dateKeyToPickerDate(firstAvailable).getTime()) / 86_400_000) + 1
+  return buildBookingWindowDateKeys(firstAvailable, daysCount)
+})
+const minDate = computed(() => (calendarWindowKeys.value[0] ? dateKeyToPickerDate(calendarWindowKeys.value[0]) : undefined))
 const maxDate = computed(() => {
-  const lastKey = bookingWindowKeys.value[bookingWindowKeys.value.length - 1]
+  const lastKey = calendarWindowKeys.value[calendarWindowKeys.value.length - 1]
   return lastKey ? dateKeyToPickerDate(lastKey) : undefined
 })
-const disabledDates = computed(() => bookingWindowKeys.value.filter((dateKey) => !slotsByDate.value.has(dateKey)).map(dateKeyToPickerDate))
+const disabledDates = computed(() => calendarWindowKeys.value.filter((dateKey) => !slotsByDate.value.has(dateKey)).map(dateKeyToPickerDate))
 const selectedDateSlots = computed(() => (selectedDateKey.value ? (slotsByDate.value.get(selectedDateKey.value) ?? []) : []))
+
+const datePickerPt = {
+  panel: { class: 'booking-datepicker-panel' },
+  day: { class: 'booking-datepicker-day' },
+}
 
 const slotDateKey = (date: { year: number; month: number; day: number }): DateKey => {
   return pickerDateToDateKey(new Date(date.year, date.month, date.day))
 }
 
-const slotCount = (date: { year: number; month: number; day: number }): number => {
-  return slotsByDate.value.get(slotDateKey(date))?.length ?? 0
+const availableSlotCount = (date: { year: number; month: number; day: number }): number => {
+  const dateKey = slotDateKey(date)
+  return slotsByDate.value.get(dateKey)?.length ?? 0
 }
 
 const selectFirstSlotForDate = (dateKey: DateKey) => {
@@ -148,7 +163,7 @@ const selectFirstSlotForDate = (dateKey: DateKey) => {
 }
 
 const chooseInitialDate = () => {
-  const firstAvailable = bookingWindowKeys.value.find((dateKey) => slotsByDate.value.has(dateKey))
+  const firstAvailable = Array.from(slotsByDate.value.keys()).sort()[0]
   selectedDateKey.value = firstAvailable ?? ''
   dateModel.value = firstAvailable ? dateKeyToPickerDate(firstAvailable) : null
   selectFirstSlotForDate(selectedDateKey.value)
@@ -208,7 +223,7 @@ onMounted(async () => {
   display: block;
   color: var(--text-muted);
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -216,19 +231,63 @@ h2,
 h3,
 strong {
   color: var(--text-strong);
-  font-weight: 900;
+  font-weight: 650;
+}
+
+.selection-card {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  padding: 16px;
+  background: var(--brand-soft);
+}
+
+.selection-time {
+  color: var(--brand);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.1;
+}
+
+.selection-date {
+  color: var(--text-body);
+  font-weight: 600;
 }
 
 .date-cell {
   display: grid;
-  gap: 2px;
+  min-width: 2.2rem;
+  min-height: 2.25rem;
+  align-content: center;
+  gap: 3px;
   justify-items: center;
+  line-height: 1;
+}
+
+.date-cell span {
+  font-weight: 600;
 }
 
 .date-cell small {
   color: var(--brand);
-  font-size: 0.66rem;
-  font-weight: 900;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+:deep(.p-datepicker-day-selected .date-cell small) {
+  color: var(--p-datepicker-date-selected-color, #ffffff);
+}
+
+:deep(.booking-datepicker-panel) {
+  width: 100%;
+  border: 0;
+  box-shadow: none;
+}
+
+:deep(.booking-datepicker-day) {
+  border-radius: var(--radius-control);
 }
 
 .slots-heading {
@@ -252,15 +311,18 @@ strong {
   gap: 12px;
   width: 100%;
   border: 1px solid var(--surface-border);
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   padding: 12px 14px;
   color: var(--text-strong);
-  background: #ffffff;
+  background: var(--surface-panel);
   cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
 }
 
 .slot-button span {
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .slot-button.selected {

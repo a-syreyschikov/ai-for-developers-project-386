@@ -11,7 +11,7 @@
     <Message v-if="error" severity="error">{{ error }}</Message>
 
     <div v-if="loading" class="event-grid">
-      <Skeleton v-for="item in 3" :key="item" height="10rem" border-radius="22px" />
+      <Skeleton v-for="item in 3" :key="item" height="10rem" />
     </div>
 
     <div v-else-if="eventTypes.length === 0" class="empty-state surface-card">
@@ -153,13 +153,13 @@ onMounted(async () => {
 
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 320px));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 340px));
   gap: 16px;
+  justify-content: start;
 }
 
 .event-card {
-  border-radius: 22px;
-  overflow: hidden;
+  height: 100%;
 }
 
 .event-card p {
@@ -193,7 +193,7 @@ onMounted(async () => {
 .empty-state strong {
   color: var(--text-strong);
   font-size: 1.25rem;
-  font-weight: 900;
+  font-weight: 650;
 }
 
 @media (max-width: 640px) {

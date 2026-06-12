@@ -2,8 +2,8 @@
   <section class="page-stack">
     <Message v-if="pageError" severity="error">{{ pageError }}</Message>
     <div v-if="loading" class="confirm-grid">
-      <Skeleton height="22rem" border-radius="22px" />
-      <Skeleton height="22rem" border-radius="22px" />
+      <Skeleton height="22rem" />
+      <Skeleton height="22rem" />
     </div>
 
     <div v-else-if="!owner || !eventType || !slot" class="unavailable-state surface-card">
@@ -165,15 +165,15 @@ onMounted(async () => {
 .panel-label {
   color: var(--text-muted);
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
 h1,
 h2 {
   color: var(--text-strong);
-  font-weight: 900;
-  letter-spacing: -0.04em;
+  font-weight: 650;
+  letter-spacing: -0.03em;
 }
 
 h1 {
@@ -204,7 +204,7 @@ dt {
 
 dd {
   color: var(--text-strong);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .form-actions {

@@ -9,7 +9,7 @@
     <Message v-if="error" severity="error">{{ error }}</Message>
 
     <div v-if="loading" class="event-grid">
-      <Skeleton v-for="item in 3" :key="item" height="10rem" border-radius="22px" />
+      <Skeleton v-for="item in 3" :key="item" height="10rem" />
     </div>
 
     <div v-else-if="eventTypes.length === 0" class="empty-state surface-card">
@@ -19,23 +19,23 @@
     </div>
 
     <div v-else class="event-grid">
-      <Card v-for="eventType in eventTypes" :key="eventType.id" class="event-card">
-        <template #title>{{ eventType.title }}</template>
-        <template #subtitle>{{ eventType.durationMinutes }} минут</template>
-        <template #content>
-          <p>{{ eventType.description || 'Описание не указано.' }}</p>
-        </template>
-        <template #footer>
-          <Button label="Выбрать" icon="pi pi-arrow-right" icon-pos="right" as="router-link" :to="`/book/${eventType.id}`" />
-        </template>
-      </Card>
+      <RouterLink v-for="eventType in eventTypes" :key="eventType.id" class="event-card-link" :to="`/book/${eventType.id}`">
+        <Card class="event-card">
+          <template #title>{{ eventType.title }}</template>
+          <template #subtitle>{{ eventType.durationMinutes }} минут</template>
+          <template #content>
+            <p>{{ eventType.description || 'Описание не указано.' }}</p>
+            <span class="event-card-action">Выбрать время <i class="pi pi-arrow-right" /></span>
+          </template>
+        </Card>
+      </RouterLink>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import Button from 'primevue/button'
+import { RouterLink } from 'vue-router'
 import Card from 'primevue/card'
 import Message from 'primevue/message'
 import Skeleton from 'primevue/skeleton'
@@ -68,18 +68,50 @@ onMounted(async () => {
 <style scoped>
 .event-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 340px));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 360px));
   gap: 16px;
+  justify-content: start;
+}
+
+.event-card-link {
+  display: block;
+  min-width: 0;
 }
 
 .event-card {
-  border-radius: 22px;
-  overflow: hidden;
+  height: 100%;
+  border: 1px solid transparent;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.event-card-link:hover .event-card,
+.event-card-link:focus-visible .event-card {
+  border-color: var(--brand);
+  box-shadow: var(--shadow-panel);
+  transform: translateY(-1px);
+}
+
+.event-card-link:focus-visible {
+  border-radius: var(--radius-panel);
+  outline: 2px solid var(--p-focus-ring-color, var(--brand));
+  outline-offset: 3px;
 }
 
 .event-card p {
-  min-height: 72px;
+  min-height: 68px;
   color: var(--text-muted);
+}
+
+.event-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  color: var(--brand);
+  font-weight: 600;
 }
 
 .empty-state {
@@ -98,6 +130,6 @@ onMounted(async () => {
 .empty-state strong {
   color: var(--text-strong);
   font-size: 1.25rem;
-  font-weight: 900;
+  font-weight: 650;
 }
 </style>

@@ -35,7 +35,7 @@ import { RouterLink, RouterView } from 'vue-router'
 .sidebar-title {
   color: var(--text-muted);
   font-size: 0.82rem;
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -43,10 +43,10 @@ import { RouterLink, RouterView } from 'vue-router'
   display: flex;
   align-items: center;
   gap: 10px;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   padding: 10px 12px;
   color: var(--text-muted);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .admin-sidebar a.router-link-active {
