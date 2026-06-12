@@ -1,4 +1,5 @@
 import { addDays, format } from 'date-fns'
+import { ru } from 'date-fns/locale/ru'
 import { formatInTimeZone } from 'date-fns-tz'
 import type { Slot } from '@/api/calendar'
 
@@ -48,7 +49,7 @@ export const formatDate = (value: string | Date, timeZone: string): string => {
 }
 
 export const formatDateLong = (value: string | Date, timeZone: string): string => {
-  return formatInTimeZone(value, timeZone, 'dd.MM.yyyy, EEEE')
+  return formatInTimeZone(value, timeZone, 'dd.MM.yyyy, EEEE', { locale: ru })
 }
 
 export const formatTime = (value: string | Date, timeZone: string): string => {

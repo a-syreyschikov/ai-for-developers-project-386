@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatSlotRange, groupSlotsByDate, toDateKeyInTimeZone } from '../datetime'
+import { formatDateLong, formatSlotRange, groupSlotsByDate, toDateKeyInTimeZone } from '../datetime'
 import type { Slot } from '@/api/calendar'
 
 describe('datetime helpers', () => {
@@ -39,5 +39,9 @@ describe('datetime helpers', () => {
         'Europe/Moscow',
       ),
     ).toBe('10:00-10:30')
+  })
+
+  it('formats long dates with Russian weekday names', () => {
+    expect(formatDateLong('2026-06-12T07:00:00Z', 'Europe/Moscow')).toBe('12.06.2026, пятница')
   })
 })

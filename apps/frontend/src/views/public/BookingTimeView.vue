@@ -2,7 +2,7 @@
   <section class="page-stack">
     <Message v-if="error" severity="error">{{ error }}</Message>
 
-    <div v-if="loading" class="booking-grid">
+    <div v-else-if="loading" class="booking-grid">
       <Skeleton v-for="item in 3" :key="item" height="22rem" border-radius="22px" />
     </div>
 
