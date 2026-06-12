@@ -148,6 +148,7 @@ test("error responses and error codes cover MVP scenarios", () => {
     "BOOKING_NOT_FOUND",
     "DUPLICATE_EVENT_TYPE_TITLE",
     "EVENT_TYPE_NOT_FOUND",
+    "INTERNAL_ERROR",
     "INVALID_SCHEDULE",
     "SLOT_OUTSIDE_BOOKING_WINDOW",
     "SLOT_UNAVAILABLE",
@@ -162,6 +163,20 @@ test("error responses and error codes cover MVP scenarios", () => {
   assert.ok(responseCodes("/api/owner/schedule", "put").includes("400"));
   assert.ok(responseCodes("/api/owner/schedule", "put").includes("422"));
   assert.ok(responseCodes("/api/owner/bookings/{bookingId}/cancel", "post").includes("422"));
+});
+
+test("operations document internal error fallback", () => {
+  for (const [path, methods] of Object.entries(requiredPaths)) {
+    for (const method of methods) {
+      const response = operation(path, method).responses["500"];
+      assert.ok(response, `missing 500 response for ${method.toUpperCase()} ${path}`);
+      assert.deepEqual(
+        response.content["application/json"].schema,
+        { $ref: "#/components/schemas/ProblemDetails" },
+        `500 response must use ProblemDetails for ${method.toUpperCase()} ${path}`,
+      );
+    }
+  }
 });
 
 test("mutating operations use agreed status codes", () => {

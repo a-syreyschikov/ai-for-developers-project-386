@@ -134,7 +134,12 @@ public sealed class CalendarStore(IClock clock)
     }
 
     var title = request.Title?.Trim() ?? "";
-    var description = request.Description?.Trim() ?? "";
+    if (request.Description is null)
+    {
+      return ApiResult<EventType>.Failure(Problems.ValidationFailed("Описание типа события обязательно."));
+    }
+
+    var description = request.Description.Trim();
 
     if (title.Length is < 1 or > 120)
     {
@@ -634,7 +639,7 @@ public static class Problems
     "Внутренняя ошибка сервера",
     StatusCodes.Status500InternalServerError,
     "Повторите запрос позже.",
-    "VALIDATION_FAILED");
+    "INTERNAL_ERROR");
 }
 
 public partial class Program;

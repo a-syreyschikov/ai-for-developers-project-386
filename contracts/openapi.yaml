@@ -19,6 +19,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Owner'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Owner
   /api/owner/bookings/upcoming:
@@ -34,6 +40,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookingList'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Owner
   /api/owner/bookings/{bookingId}/cancel:
@@ -66,6 +78,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Owner
   /api/owner/event-types:
@@ -81,6 +99,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventTypeList'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Owner
     post:
@@ -107,6 +131,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Owner
       requestBody:
@@ -128,6 +158,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Schedule'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Owner
     put:
@@ -150,6 +186,12 @@ paths:
                 $ref: '#/components/schemas/ProblemDetails'
         '422':
           description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
           content:
             application/json:
               schema:
@@ -199,6 +241,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Public
       requestBody:
@@ -226,6 +274,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventTypeList'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Public
       x-example:
@@ -258,6 +312,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Public
   /api/public/event-types/{eventTypeId}/slots:
@@ -284,6 +344,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Public
       x-example:
@@ -306,6 +372,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Owner'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
       tags:
         - Public
       x-example:
@@ -473,6 +545,7 @@ components:
         - SLOT_UNAVAILABLE
         - SLOT_OUTSIDE_BOOKING_WINDOW
         - BOOKING_NOT_CANCELLABLE
+        - INTERNAL_ERROR
       description: Machine-readable domain error code.
     EventType:
       type: object

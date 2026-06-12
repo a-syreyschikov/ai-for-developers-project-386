@@ -29,6 +29,7 @@ enum ErrorCode {
   SLOT_UNAVAILABLE,
   SLOT_OUTSIDE_BOOKING_WINDOW,
   BOOKING_NOT_CANCELLABLE,
+  INTERNAL_ERROR,
 }
 
 @doc("Booking lifecycle status. Cancelled bookings do not block slots.")
@@ -353,6 +354,11 @@ model UnprocessableEntityResponse {
   @body body: ProblemDetails;
 }
 
+model InternalServerErrorResponse {
+  @statusCode statusCode: 500;
+  @body body: ProblemDetails;
+}
+
 @tag("Public")
 @route("/public")
 interface PublicApi {
@@ -362,7 +368,7 @@ interface PublicApi {
   @extension("x-example", #{ response: #{ id: "11111111-1111-1111-1111-111111111111", displayName: "Alex Owner", timeZone: "Europe/Moscow" } })
   @get
   @route("/owner")
-  getPublicOwner(): Owner;
+  getPublicOwner(): Owner | InternalServerErrorResponse;
 
   @summary("List public event types")
   @doc("Returns event types sorted by title ascending.")
@@ -370,13 +376,13 @@ interface PublicApi {
   @extension("x-example", #{ response: #{ items: #[#{ id: "22222222-2222-2222-2222-222222222222", title: "Intro call", description: "A short introductory call.", durationMinutes: 30 }] } })
   @get
   @route("/event-types")
-  listPublicEventTypes(): EventTypeList;
+  listPublicEventTypes(): EventTypeList | InternalServerErrorResponse;
 
   @summary("Get public event type")
   @operationId("getPublicEventType")
   @get
   @route("/event-types/{eventTypeId}")
-  getPublicEventType(@path eventTypeId: ResourceId): EventType | NotFoundResponse;
+  getPublicEventType(@path eventTypeId: ResourceId): EventType | NotFoundResponse | InternalServerErrorResponse;
 
   @summary("List free slots for an event type")
   @doc("Returns free slots in the strict booking window now < startsAt < now + 14 days, sorted by startsAt ascending.")
@@ -384,7 +390,7 @@ interface PublicApi {
   @extension("x-example", #{ response: #{ items: #[#{ eventTypeId: "22222222-2222-2222-2222-222222222222", startsAt: "2026-06-15T07:00:00Z", endsAt: "2026-06-15T07:30:00Z", durationMinutes: 30 }] } })
   @get
   @route("/event-types/{eventTypeId}/slots")
-  listPublicEventTypeSlots(@path eventTypeId: ResourceId): SlotList | NotFoundResponse;
+  listPublicEventTypeSlots(@path eventTypeId: ResourceId): SlotList | NotFoundResponse | InternalServerErrorResponse;
 
   @summary("Create guest booking")
   @doc("Creates a booking for a computed free slot. The server computes endsAt from the event type duration.")
@@ -392,7 +398,7 @@ interface PublicApi {
   @extension("x-example", #{ request: #{ eventTypeId: "22222222-2222-2222-2222-222222222222", startsAt: "2026-06-15T07:00:00Z", guestName: "Guest User", guestEmail: "guest@example.com" } })
   @post
   @route("/bookings")
-  createPublicBooking(@body request: CreateBookingRequest): CreatedBookingResponse | BadRequestResponse | NotFoundResponse | ConflictResponse | UnprocessableEntityResponse;
+  createPublicBooking(@body request: CreateBookingRequest): CreatedBookingResponse | BadRequestResponse | NotFoundResponse | ConflictResponse | UnprocessableEntityResponse | InternalServerErrorResponse;
 }
 
 @tag("Owner")
@@ -402,47 +408,47 @@ interface OwnerApi {
   @doc("Returns the single preconfigured owner. No authentication is required in the MVP.")
   @operationId("getOwner")
   @get
-  getOwner(): Owner;
+  getOwner(): Owner | InternalServerErrorResponse;
 
   @summary("List owner event types")
   @doc("Returns event types sorted by title ascending.")
   @operationId("listOwnerEventTypes")
   @get
   @route("/event-types")
-  listOwnerEventTypes(): EventTypeList;
+  listOwnerEventTypes(): EventTypeList | InternalServerErrorResponse;
 
   @summary("Create owner event type")
   @doc("Creates an event type. Duplicate titles after trim and case-insensitive normalization return 409.")
   @operationId("createOwnerEventType")
   @post
   @route("/event-types")
-  createOwnerEventType(@body request: CreateEventTypeRequest): CreatedEventTypeResponse | BadRequestResponse | ConflictResponse;
+  createOwnerEventType(@body request: CreateEventTypeRequest): CreatedEventTypeResponse | BadRequestResponse | ConflictResponse | InternalServerErrorResponse;
 
   @summary("Get owner schedule")
   @doc("Returns the owner's weekly availability schedule in the owner's time zone.")
   @operationId("getOwnerSchedule")
   @get
   @route("/schedule")
-  getOwnerSchedule(): Schedule;
+  getOwnerSchedule(): Schedule | InternalServerErrorResponse;
 
   @summary("Update owner schedule")
   @doc("Replaces the owner's weekly availability schedule. Existing bookings remain unchanged.")
   @operationId("updateOwnerSchedule")
   @put
   @route("/schedule")
-  updateOwnerSchedule(@body request: UpdateScheduleRequest): Schedule | BadRequestResponse | UnprocessableEntityResponse;
+  updateOwnerSchedule(@body request: UpdateScheduleRequest): Schedule | BadRequestResponse | UnprocessableEntityResponse | InternalServerErrorResponse;
 
   @summary("List upcoming owner bookings")
   @doc("Returns scheduled bookings with startsAt > server now, sorted by startsAt ascending.")
   @operationId("listOwnerUpcomingBookings")
   @get
   @route("/bookings/upcoming")
-  listOwnerUpcomingBookings(): BookingList;
+  listOwnerUpcomingBookings(): BookingList | InternalServerErrorResponse;
 
   @summary("Cancel owner booking")
   @doc("Cancels a future scheduled booking. Repeated cancellation is idempotent and returns the cancelled booking.")
   @operationId("cancelOwnerBooking")
   @post
   @route("/bookings/{bookingId}/cancel")
-  cancelOwnerBooking(@path bookingId: ResourceId): Booking | NotFoundResponse | UnprocessableEntityResponse;
+  cancelOwnerBooking(@path bookingId: ResourceId): Booking | NotFoundResponse | UnprocessableEntityResponse | InternalServerErrorResponse;
 }
