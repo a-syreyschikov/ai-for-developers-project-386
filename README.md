@@ -11,7 +11,7 @@
 
 - API-контракт: TypeSpec + OpenAPI 3.0.
 - Contract tests: `node:test` + `c8`.
-- Будущий backend: .NET 8 + C#.
+- Backend: .NET 8 + ASP.NET Core Minimal API + C#, запуск и тесты через Docker.
 - Будущий frontend: Vite + Vue + TypeScript.
 - Контейнеризация текущего шага: Docker-образ `calendar-contract`, который валидирует контракт.
 
@@ -22,7 +22,7 @@
 - `docs/domain.md` — доменные сущности и правила.
 - `docs/agent-task.md` — инструкции будущим агентам.
 - `docs/adr/` — архитектурные решения.
-- `apps/backend/` — место под backend на .NET 8 + C#.
+- `apps/backend/` — backend на .NET 8 + ASP.NET Core Minimal API.
 - `apps/frontend/` — место под frontend на Vite + Vue + TypeScript.
 - `tests/contract.test.mjs` — тесты API-контракта.
 
@@ -33,6 +33,9 @@ make install
 make contract
 make test
 make test-coverage
+make backend-build
+make backend-run
+make backend-test
 make docker-build
 make docker-run
 ```
@@ -44,5 +47,6 @@ make docker-run
 - TypeSpec является единым источником правды для frontend и backend.
 - Любое изменение API сначала вносится в `contracts/api/main.tsp`.
 - После изменения контракта нужно выполнить `make test` и закоммитить обновленный `contracts/openapi.yaml`.
+- Backend реализуется от контракта и запускается через Docker, без локальной установки `dotnet`.
 - На текущем шаге coverage 80% относится к contract-test tooling.
 - Тесты будущих frontend/backend частей будут добавляться вместе с реализацией соответствующего поведения.
