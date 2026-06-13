@@ -60,6 +60,15 @@ make test-e2e
 
 ## Запуск приложения
 
+Production-сценарий собирает один Docker-образ: backend запускает API, отдает собранный frontend и слушает порт из переменной окружения `PORT`.
+
+```bash
+make docker-build
+PORT=8090 make docker-run
+```
+
+Приложение будет доступно на `http://localhost:8090`.
+
 Локальный dev-сценарий: backend запускается через Docker, frontend запускается через Vite и проксирует `/api` на `http://localhost:8080`.
 
 ```bash

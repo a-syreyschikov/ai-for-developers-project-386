@@ -1,9 +1,10 @@
 .RECIPEPREFIX := >
 .DEFAULT_GOAL := test
 
-IMAGE_NAME ?= calendar-contract
+IMAGE_NAME ?= calendar-app
 BACKEND_IMAGE_NAME ?= calendar-backend
 DOTNET_SDK_IMAGE ?= mcr.microsoft.com/dotnet/sdk:8.0
+PORT ?= 8080
 
 .PHONY: install contract test test-coverage test-e2e backend-build backend-run backend-test compose-build compose-up compose-down docker-build docker-run clean help
 
@@ -40,11 +41,11 @@ compose-up: ## Run frontend and backend with Docker Compose
 compose-down: ## Stop frontend and backend compose services
 > docker compose down
 
-docker-build: ## Build Docker image and validate contract during build
+docker-build: ## Build production Docker image
 > docker build -t $(IMAGE_NAME) .
 
-docker-run: ## Run Docker contract validator
-> docker run --rm $(IMAGE_NAME)
+docker-run: ## Run production Docker image on PORT
+> docker run --rm -e PORT=$(PORT) -p $(PORT):$(PORT) $(IMAGE_NAME)
 
 clean: ## Remove temporary generated output and coverage reports
 > rm -rf generated coverage tsp-output

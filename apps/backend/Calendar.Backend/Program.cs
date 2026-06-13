@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:8080");
+var port = Environment.GetEnvironmentVariable("PORT");
+builder.WebHost.UseUrls($"http://0.0.0.0:{(string.IsNullOrWhiteSpace(port) ? "8080" : port)}");
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -41,6 +42,8 @@ app.UseExceptionHandler(errorApp =>
   });
 });
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseCors();
 
 app.MapGet("/api/public/owner", (CalendarStore store) => store.GetOwner());
@@ -70,6 +73,8 @@ app.MapGet("/api/owner/bookings/upcoming", (CalendarStore store) => new BookingL
 
 app.MapPost("/api/owner/bookings/{bookingId}/cancel", (string bookingId, CalendarStore store) =>
   ToHttpResult(store.CancelBooking(bookingId)));
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
