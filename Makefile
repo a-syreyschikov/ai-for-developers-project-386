@@ -5,7 +5,7 @@ IMAGE_NAME ?= calendar-contract
 BACKEND_IMAGE_NAME ?= calendar-backend
 DOTNET_SDK_IMAGE ?= mcr.microsoft.com/dotnet/sdk:8.0
 
-.PHONY: install contract test test-coverage backend-build backend-run backend-test compose-build compose-up compose-down docker-build docker-run clean help
+.PHONY: install contract test test-coverage test-e2e backend-build backend-run backend-test compose-build compose-up compose-down docker-build docker-run clean help
 
 install: ## Install npm dependencies from lockfile
 > npm ci
@@ -18,6 +18,9 @@ test: ## Generate contract, run contract tests, and enforce coverage
 
 test-coverage: ## Run contract tests with coverage report
 > npm run test:coverage
+
+test-e2e: ## Run Playwright integration tests against Docker Compose app
+> npm run test:e2e --prefix apps/frontend
 
 backend-build: ## Build backend Docker image
 > docker build -t $(BACKEND_IMAGE_NAME) apps/backend
