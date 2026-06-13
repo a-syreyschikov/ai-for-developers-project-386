@@ -9,7 +9,16 @@
 
 ## Деплой
 
-Публичная ссылка: https://calendar-app-ov28.onrender.com
+Публичная ссылка: <a href="https://calendar-app-ov28.onrender.com" target="_blank" rel="noopener noreferrer">https://calendar-app-ov28.onrender.com</a>
+
+## Render MCP
+
+`opencode.json` ожидает Render MCP token в переменной окружения `RENDER_MCP_TOKEN`. Реальный `.env` не коммитится; шаблон доступен в `.env.example`.
+
+```bash
+export RENDER_MCP_TOKEN=your_render_mcp_token
+opencode
+```
 
 ## Стек
 
