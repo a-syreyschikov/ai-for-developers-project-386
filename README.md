@@ -7,6 +7,10 @@
 
 Проект выполняется в подходе Design First: сначала фиксируются доменная модель и API-контракт, затем отдельно реализуются frontend и backend.
 
+## Деплой
+
+Публичная ссылка: https://calendar-app-ov28.onrender.com
+
 ## Стек
 
 - API-контракт: TypeSpec + OpenAPI 3.0.
